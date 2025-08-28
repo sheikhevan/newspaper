@@ -5,5 +5,7 @@ pkgs.mkShell {
     rustc
     rustfmt
     rust-analyzer
+    pkg-config
+    openssl
   ];
 }

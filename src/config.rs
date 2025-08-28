@@ -2,23 +2,24 @@ use serde::{Deserialize, Serialize};
 use std::fs::OpenOptions;
 use std::io::{Read, Write};
 use std::path::Path;
+use std::sync::OnceLock;
 use std::{env, fs};
 
 #[derive(Deserialize, Serialize, Debug)]
 pub struct Config {
-    news: News,
+    pub news: News,
 }
 
 #[derive(Deserialize, Serialize, Debug)]
-struct News {
-    max_articles: u16,
-    sources: NewsSources,
+pub struct News {
+    pub max_articles: u16,
+    pub sources: NewsSources,
 }
 
 #[derive(Deserialize, Serialize, Debug)]
-struct NewsSources {
-    name: String,
-    url: String,
+pub struct NewsSources {
+    pub name: String,
+    pub url: String,
 }
 
 impl Default for Config {
@@ -45,6 +46,20 @@ impl Default for NewsSources {
             url: "https://www.vaticannews.va/en.rss.xml".to_string(),
         }
     }
+}
+
+static CONFIG: OnceLock<Config> = OnceLock::new();
+
+pub fn init_config() -> Result<(), Box<dyn std::error::Error>> {
+    let config = read_config()?;
+    CONFIG
+        .set(config)
+        .map_err(|_| "Config already initialized")?;
+    Ok(())
+}
+
+pub fn get_config() -> &'static Config {
+    CONFIG.get().expect("Config not initialized")
 }
 
 pub fn read_config() -> Result<Config, Box<dyn std::error::Error>> {

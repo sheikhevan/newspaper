@@ -4,5 +4,7 @@ version = "0.1.0"
 edition = "2024"
 
 [dependencies]
+reqwest = "0.12.23"
+rss = { version = "2.0.12", features = ["atom"] }
 serde = { version = "1.0.219", features = ["derive"] }
 toml = "0.9.5"
