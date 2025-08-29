@@ -13,11 +13,11 @@ pub struct Config {
 #[derive(Deserialize, Serialize, Debug)]
 pub struct News {
     pub max_articles: u16,
-    pub sources: NewsSources,
+    pub sources: Vec<NewsSource>,
 }
 
 #[derive(Deserialize, Serialize, Debug)]
-pub struct NewsSources {
+pub struct NewsSource {
     pub name: String,
     pub url: String,
 }
@@ -34,16 +34,10 @@ impl Default for News {
     fn default() -> Self {
         News {
             max_articles: 5,
-            sources: NewsSources::default(),
-        }
-    }
-}
-
-impl Default for NewsSources {
-    fn default() -> Self {
-        NewsSources {
-            name: "Vatican News".to_string(),
-            url: "https://www.vaticannews.va/en.rss.xml".to_string(),
+            sources: vec![NewsSource {
+                name: "Vatican News".to_string(),
+                url: "https://www.vaticannews.va/en.rss.xml".to_string(),
+            }],
         }
     }
 }
