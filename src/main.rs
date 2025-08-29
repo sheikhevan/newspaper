@@ -2,6 +2,7 @@ use tokio;
 
 mod config;
 mod rss;
+mod typst;
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
@@ -13,10 +14,9 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             Ok(channel) => {
                 println!("Fetched from: {} ({})", source.name, source.url);
                 println!("Feed title: {}", channel.title);
-                println!("Feed description: {}", channel.description)
             }
             Err(e) => {
-                eprintln!("Error fetching RSS from {}, {}", source.name, e)
+                eprintln!("Error fetching RSS from {}: {}", source.name, e)
             }
         }
     }
