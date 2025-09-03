@@ -1,6 +1,6 @@
 use tokio;
 
-use crate::rss::parse_rss_feed;
+use crate::rss::{parse_rss_feed, print_latest_posts};
 
 mod config;
 mod rss;
@@ -12,11 +12,16 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let config = config::get_config();
 
     for source in &config.news.sources {
-        println!("Processing: {} ({})", source.name, source.url);
-
-        if let Err(e) = parse_rss_feed(&source.url).await {
-            eprintln!("Error processing RSS from {}: {}", source.name, e);
-        }
+        match parse_rss_feed(&source.url).await {
+            Ok(rss) => {
+                print_latest_posts(rss, config.news.max_articles);
+                Ok(())
+            }
+            Err(e) => {
+                eprintln!("There was an error parsing the RSS: {}", e);
+                Err(())
+            }
+        };
     }
 
     Ok(())
