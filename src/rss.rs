@@ -1,3 +1,4 @@
+use crate::typst::Newspaper;
 use rss_gen::{RssData, parse_rss};
 
 pub async fn parse_rss_feed(url: &str) -> Result<RssData, Box<dyn std::error::Error>> {
@@ -13,13 +14,22 @@ pub async fn parse_rss_feed(url: &str) -> Result<RssData, Box<dyn std::error::Er
     }
 }
 
-pub fn print_latest_posts(data: RssData, number: u16) -> Result<(), Box<dyn std::error::Error>> {
-    let latest_posts: Vec<_> = data.items.iter().take(number as usize).collect();
+pub fn add_rss_to_newspaper(
+    data: RssData,
+    newspaper: &mut Newspaper,
+    max_articles: u16,
+) -> Result<(), Box<dyn std::error::Error>> {
+    let latest_posts: Vec<_> = data.items.iter().take(max_articles as usize).collect();
 
-    for (i, item) in latest_posts.iter().enumerate() {
-        println!("{}. {}", i + 1, &item.title);
-        println!("\nLink: {}", &item.link);
-        println!("\nPub Date: {}", &item.pub_date);
+    for item in latest_posts.iter() {
+        newspaper.add_article(
+            item.title.clone(),
+            item.author.clone(),
+            item.description.clone(),
+            item.link.clone(),
+            item.pub_date.clone(),
+        );
     }
+
     Ok(())
 }
