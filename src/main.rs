@@ -1,7 +1,7 @@
 use tokio;
 
 use crate::rss::{add_rss_to_newspaper, parse_rss_feed};
-use crate::typst::Newspaper;
+use crate::typst::{Newspaper, TypstRenderer};
 
 mod config;
 mod rss;
@@ -13,6 +13,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let config = config::get_config();
 
     let mut newspaper = Newspaper::new();
+    let renderer = TypstRenderer::new("templates")?;
 
     for source in &config.news.sources {
         match parse_rss_feed(&source.url).await {
@@ -35,15 +36,9 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     println!("Here is your news for {}", newspaper.date);
 
-    let mut i: u32 = 1;
-    for article in newspaper.articles {
-        println!("\n{}.\n{}", i, article.title);
-        println!("{}", article.author);
-        println!("{}", article.content);
-        println!("{}", article.link);
-        println!("{}", article.pub_date);
-        i += 1;
-    }
+    let output_path = format!("Newspaper_{}.pdf", chrono::Local::now().format("%Y%m%d"));
+
+    renderer.generate_pdf(&newspaper, &output_path)?;
 
     // TODO: Change this to only print when using "verbose" in config
     println!("\nCollected {} total articles", newspaper.total_articles);
