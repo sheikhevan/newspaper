@@ -35,8 +35,8 @@ impl Default for News {
         News {
             max_articles: 5,
             sources: vec![NewsSource {
-                name: "Vatican News".to_string(),
-                url: "https://www.vaticannews.va/en.rss.xml".to_string(),
+                name: "NASA Image of the Day".to_string(),
+                url: "https://www.nasa.gov/rss/dyn/lg_image_of_the_day.rss".to_string(),
             }],
         }
     }
