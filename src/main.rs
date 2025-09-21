@@ -1,3 +1,5 @@
+use std::env;
+
 use tokio;
 
 use crate::rss::{add_rss_to_newspaper, parse_rss_feed};
@@ -11,9 +13,10 @@ mod typst;
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
     config::init_config()?;
     let config = config::get_config();
+    let home = env::var("HOME")?;
 
     let mut newspaper = Newspaper::new();
-    let renderer = TypstRenderer::new("templates")?;
+    let renderer = TypstRenderer::new(&format!("{}/.config/newspaper/templates", home))?;
 
     for source in &config.news.sources {
         match parse_rss_feed(&source.url).await {

@@ -59,7 +59,9 @@ pub fn get_config() -> &'static Config {
 pub fn read_config() -> Result<Config, Box<dyn std::error::Error>> {
     let home = env::var("HOME")?;
     let config_path = format!("{}/.config/newspaper/config.toml", home);
+    let template_path = format!("{}/.config/newspaper/templates/newspaper.typ", home);
 
+    // Generate config file if it doesn't exist
     if let Some(parent) = Path::new(&config_path).parent() {
         fs::create_dir_all(parent)?;
     }
@@ -74,6 +76,22 @@ pub fn read_config() -> Result<Config, Box<dyn std::error::Error>> {
             .open(&config_path)?;
 
         file.write_all(toml_string.as_bytes())?;
+    }
+
+    // Generate template file (templates/newspaper.typ) if it doesn't exist
+    if let Some(parent) = Path::new(&template_path).parent() {
+        fs::create_dir_all(parent)?;
+    }
+
+    if !Path::new(&template_path).exists() {
+        let template_string = include_str!("templates/newspaper.typ");
+
+        let mut file = OpenOptions::new()
+            .write(true)
+            .create(true)
+            .open(&template_path)?;
+
+        file.write_all(template_string.as_bytes())?;
     }
 
     let mut file = OpenOptions::new()
